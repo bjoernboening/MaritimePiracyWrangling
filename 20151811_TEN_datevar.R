@@ -1,3 +1,4 @@
+# Daniel's date var
 setwd("C:/Users/Dani/Google Drive/05_Master Thesis/00_Piracy_2015-16/03_Data/Tennessee/CSV")
 TEN <- read.csv("20151118_TEN.csv", stringsAsFactors = FALSE, header = TRUE, sep = ",")
 
