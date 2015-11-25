@@ -21,13 +21,22 @@ summary(TEN$month)
 #TEN$year <- TEN$year-1900
 
 #substring(TEN$year, 1, 1)
+
 TEN$year <- substring(TEN$year, 3) #delete first two digits
 summary(TEN$year)
 
 library(base)
-#date <- as.character(paste(TEN$year, TEN$month, TEN$day, sep = ""))
 
+#create date: year/month/day
 TEN$date <- as.character(paste(TEN$year, TEN$month, TEN$day, sep = "/")) #paste time variables behind each other
 summary(TEN$date)
 
 TEN$date <- as.Date(TEN$date, "%y/%m/%d") #set as Date variable
+
+#create a date2: year/month/01
+TEN$date2 <- as.character(paste(TEN$year, TEN$month, "01", sep = "/")) #paste year month var behind each other, add 01 for day
+summary(TEN$date2)
+
+TEN$date2 <- as.Date(TEN$date2, "%y/%m/%d") #set as Date variable, year month only
+
+ 
