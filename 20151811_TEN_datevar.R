@@ -15,6 +15,13 @@ summary(TEN$day)
 TEN$month <- str_pad(TEN$month, 2, pad = "0") #add zero before ond digit number
 summary(TEN$month)
 
+library(zoo)
+TEN$date3 <- as.character(paste(TEN$year, TEN$month, sep = "-")) #paste year month behind each other
+summary(TEN$date3)
+#zoo <- read.zoo(TEN$date2, FUN = as.yearmon)
+#plot(zoo)
+TEN$date3 <- as.yearmon(TEN$date3)
+
 #TEN$day <- as.numeric(TEN$day)
 #TEN$month <- as.numeric(TEN$month)
 #TEN$year <- as.numeric(TEN$year)
@@ -38,5 +45,3 @@ TEN$date2 <- as.character(paste(TEN$year, TEN$month, "01", sep = "/")) #paste ye
 summary(TEN$date2)
 
 TEN$date2 <- as.Date(TEN$date2, "%y/%m/%d") #set as Date variable, year month only
-
- 
