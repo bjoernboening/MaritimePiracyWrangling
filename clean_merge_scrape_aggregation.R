@@ -30,8 +30,12 @@ shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", st
   # have a look at how the variables are created
 str(shipping)
   # create sub sample for wrangling
-sample <- subset(shipping, closest_coastal_state=="Indonesia", !(is.na(shipping["incident_type"])),
-                  select=1:25)
+sample <- shipping[shipping$closest_coastal_state %in% c("Indonesia", "Malaysia", "Singapore") & year[2004:2014] ]
+sub <- subset(sample, year > 2004, select = c(1:25))
+
+sample$incident_type[is.na(sample$incident_type)] <- NULL
+sample[!is.na(sample$closest_coastal_state), ]
+
 # Fix or drop! combine date into one column - 
 unite(shipping, "date", c("year", "month", "day"), sep = "-")
 
