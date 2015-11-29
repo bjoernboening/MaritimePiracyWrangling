@@ -12,7 +12,7 @@ library(stringr)
 TEN$day <- str_pad(TEN$day, 2, pad = "0") #add zero before one digit number
 summary(TEN$day)
 
-TEN$month <- str_pad(TEN$month, 2, pad = "0") #add zero before ond digit number
+TEN$month <- str_pad(TEN$month, 2, pad = "0") #add zero before one digit number
 summary(TEN$month)
 
 library(zoo)
