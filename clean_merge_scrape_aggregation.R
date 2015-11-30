@@ -32,7 +32,7 @@ str(shipping)
   # create sub sample for wrangling
 sample <- shipping[shipping$closest_coastal_state %in% c("Indonesia", "Malaysia", "Singapore") & year[2004:2014] ]
 sub <- subset(sample, year > 2002, select = c(1:25))
-  # trying to get rid of NAss
+  # trying to get rid of NAs
 sample$incident_type[is.na(sample$incident_type)] <- NULL
 sample[!is.na(sample$closest_coastal_state), ]
 
