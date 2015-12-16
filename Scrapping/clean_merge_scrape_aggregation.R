@@ -26,13 +26,13 @@ getwd()
 
 #import data
   # empty cells are now coded with NA and can manually be excluded from any function with na.omit command
-shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
+shipping <- read.csv("Data/MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
   # have a look at how the variables are created
 str(shipping)
   # create sub sample for wrangling
 sample <- shipping[shipping$closest_coastal_state %in% c("Indonesia", "Malaysia", "Singapore") & year[2004:2014] ]
 sub <- subset(sample, year > 2002, select = c(1:25))
-  # trying to get rid of NAs
+  # to get rid of NAs
 sample$incident_type[is.na(sample$incident_type)] <- NULL
 sample[!is.na(sample$closest_coastal_state), ]
 
@@ -71,13 +71,20 @@ names(CoastlineTable)[2] <- 'Coast/Area ratio (m/km2)'
 #p297 from R for Dummies
 allmerge <- merge(shipping, CoastlineTable, all.x=TRUE)
 
-
+######
+#Armed Conflict
+######
+military <- read.csv("Data/armed-conflict.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, na.strings = c("", "NA")) 
+milcc <- military$Location #155 unique values
+military$iso2c <- countrycode(milcc, "country.name", "iso2c") #only 84 iso countries
+military$year <- military$Year
+military$Year <- NULL
 ######################################
-# Scraping Data from World Bank -CK
+# Scraping Data from World Bank -BB
 ######################################
 missmap(shipping)
 #get rid of NA for WDI parsing
-shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
+shipping <- read.csv("Data/MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
 #shipping$closest_coastal_state <- na.omit(shipping)$closest_coastal_state
 #country names
 cc <- unique(na.omit(shipping)$closest_coastal_state) #108 unique values
@@ -100,7 +107,8 @@ allWDI <- WDI(iso, indicator = c("SL.UEM.TOTL.ZS",
                                  "SL.TLF.ACTI.1524.ZS",
                                  "SL.EMP.VULN.MA.ZS",
                                  "SL.EMP.VULN.ZS"), 
-              start=1994, end=2014)
+              start=1994, end=2014, cache = TRUE)
+
 # renaming
 names(allWDI)[1] <- 'iso'
 names(allWDI)[2] <- 'country'
@@ -114,14 +122,21 @@ names(allWDI)[9] <- 'GDP.PPP'
 names(allWDI)[10] <- 'GDP'
 names(allWDI)[11] <- 'easybusiness'
 names(allWDI)[12] <- 'FDI.ofGDP'
-names(allWDI)[13] <- 'pop.grow'
+names(allWDI)[13] <- 'pop'
 names(allWDI)[14] <- 'pop.rur'
-names(allWDI)[15] <- 'pop.urb.grow'
+names(allWDI)[15] <- 'pop.urb'
 names(allWDI)[16] <- 'pov.125'
 names(allWDI)[17] <- 'infl'
 names(allWDI)[18] <- 'labor.part'
 names(allWDI)[19] <- 'vul.emp.m'
 names(allWDI)[20] <- 'vul.emp'
+
+######
+#Merge
+######
+names(wdiData2)[1] <- 'closest_coastal_state'
+total <- merge(allWDI,military,by=c("iso2c","year"))
+
 
 #single parsing if desired
 unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
@@ -143,8 +158,6 @@ inflation <- WDI(iso, indicator = "FP.CPI.TOTL.ZG", start=1994, end=2014)
 labor.part <- WDI(iso, indicator = "SL.TLF.ACTI.1524.ZS", start=1994, end=2014)
 vulnerable.emp.m <- WDI(iso, indicator = "SL.EMP.VULN.MA.ZS", start=1994, end=2014)
 vulnerable.emp <- WDI(iso, indicator = "SL.EMP.VULN.ZS", start=1994, end=2014)
-
-
 
 ###Grab GDP per capita data for our 10 key countries
 countries <- c("Indonesia", "Yemen", "Malaysia", "Bangladesh", "Nigeria", "India", "Somalia", "Philippines", "Vietnam", "Brazil")
