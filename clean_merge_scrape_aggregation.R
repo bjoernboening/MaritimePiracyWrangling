@@ -16,9 +16,9 @@ library(httr) # scraping from http sites
 library(XML) # Tool for generating XML file
 library(WDI) # Scraping Data from the World Bank 
 library(countrycode) # provides world bank country codes 
-#attach(shipping)
+library(Amelia)
 
-# set working directories 
+# set working directories if necessary (if data lies in git repo it is not necessary though)
 try(setwd("/Users/codykoebnick/Downloads/Data Set"),silent=TRUE)
 try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling"),silent=TRUE)
 try(setwd("/Users/laurencehendry/GitHub/MaritimePiracy"),silent=TRUE) 
@@ -75,6 +75,14 @@ allmerge <- merge(shipping, CoastlineTable, all.x=TRUE)
 ######################################
 # Scraping Data from World Bank -CK
 ######################################
+missmap(shipping)
+#get rid of NA for WDI parsing
+shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
+shipping <- na.omit(shipping)
+cc <- unique(shipping$closest_coastal_state)
+iso <- countrycode(cc, "country.name", "iso2c")
+
+unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
 
 ###Grab GDP per capita data for our 10 key countries
 countries <- c("Indonesia", "Yemen", "Malaysia", "Bangladesh", "Nigeria", "India", "Somalia", "Philippines", "Vietnam", "Brazil")
