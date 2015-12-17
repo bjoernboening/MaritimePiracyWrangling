@@ -16,15 +16,11 @@ library(httr) # scraping from http sites
 library(XML) # Tool for generating XML file
 library(WDI) # Scraping Data from the World Bank 
 library(countrycode) # provides world bank country codes 
-<<<<<<< HEAD
 library(Amelia) #eyeballing missing values
 library(tidyr) # reshaping
-=======
-library(Amelia)
->>>>>>> origin/master
 
 #set working directories if necessary (if data lies in git repo it is not necessary though)
-try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling"),silent=TRUE)
+try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling/Data"),silent=TRUE)
 try(setwd("C:/Users/Dani/Documents/GitHub/MaritimePiracyWrangling/Data"),silent=TRUE)
 getwd()
 
@@ -32,22 +28,13 @@ getwd()
 #empty cells are now coded with NA and can manually be excluded from any function with na.omit command
 shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
 
-<<<<<<< HEAD
 ######################################
 # Scraping Data from World Bank -BB
 ######################################
 missmap(shipping) # eyeballing missing data
 
-=======
-####################################
-#Scraping Data from World Bank -BB-#
-####################################
-
-missmap(shipping)
->>>>>>> origin/master
-#get rid of NA for WDI parsing
+#get rid of NA for WDI parsing with factor vectors
 shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
-
 #country names
 cc <- unique(na.omit(shipping)$closest_coastal_state) #108 unique values
 iso <- countrycode(cc, "country.name", "iso2c") #only 84 iso countries
