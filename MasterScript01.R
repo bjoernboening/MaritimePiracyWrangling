@@ -16,7 +16,7 @@ library(httr) # scraping from http sites
 library(XML) # Tool for generating XML file
 library(WDI) # Scraping Data from the World Bank 
 library(countrycode) # provides world bank country codes 
-library(Amelia)
+library(Amelia) #eyeballing missing values
 library(tidyr) # reshaping
 
 #set working directories if necessary (if data lies in git repo it is not necessary though)
@@ -31,13 +31,15 @@ shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", st
 ######################################
 # Scraping Data from World Bank -BB
 ######################################
-missmap(shipping)
+missmap(shipping) # eyeballing missing data
+
 #get rid of NA for WDI parsing
 shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
-#shipping$closest_coastal_state <- na.omit(shipping)$closest_coastal_state
+
 #country names
 cc <- unique(na.omit(shipping)$closest_coastal_state) #108 unique values
 iso <- countrycode(cc, "country.name", "iso2c") #only 84 iso countries
+
 #parsing desired data from World Bank
 allWDI <- WDI(iso, indicator = c("SL.UEM.TOTL.ZS", 
                                  "SL.UEM.1524.MA.ZS", 
@@ -58,7 +60,6 @@ allWDI <- WDI(iso, indicator = c("SL.UEM.TOTL.ZS",
                                  "SL.EMP.VULN.ZS"), 
               start=1994, end=2014)
 # renaming
-names(allWDI)[1] <- 'iso'
 names(allWDI)[2] <- 'country'
 names(allWDI)[3] <- 'year'
 names(allWDI)[4] <- 'unem.total'
@@ -78,6 +79,21 @@ names(allWDI)[17] <- 'infl'
 names(allWDI)[18] <- 'labor.part'
 names(allWDI)[19] <- 'vul.emp.m'
 names(allWDI)[20] <- 'vul.emp'
+
+######
+#Armed Conflict
+######
+military <- read.csv("Data/armed-conflict.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, na.strings = c("", "NA")) 
+milcc <- military$Location #155 unique values
+military$iso2c <- countrycode(milcc, "country.name", "iso2c") #only 84 iso countries
+military$year <- military$Year
+military$Year <- NULL
+
+######
+#Merge
+######
+total <- merge(allWDI,military,by=c("iso2c","year"))
+#write.csv(total, file="conflictsWDImerge.csv", na = "NA") #produces csv file if desired
 
 ###########################
 #single parsing if desired#
