@@ -139,7 +139,8 @@ total <- merge(allWDI,military,by=c("iso2c","year"), all.x = TRUE)
 #Aggregate to MACRO
 ######
 library(reshape2)
-
+aggregat <- dcast(shipping, closest_coastal_state + year ~ Incident_type_recode, sum) # p317
+  
 #single parsing if desired
 unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
 unem.y.m <- WDI(iso, indicator = "SL.UEM.1524.MA.ZS", start=1994, end=2014)
