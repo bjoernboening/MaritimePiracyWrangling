@@ -16,18 +16,16 @@ library(httr) # scraping from http sites
 library(XML) # Tool for generating XML file
 library(WDI) # Scraping Data from the World Bank 
 library(countrycode) # provides world bank country codes 
-library(Amelia)
+library(Amelia) # eyeballing missing values
 
 # set working directories if necessary (if data lies in git repo it is not necessary though)
-try(setwd("/Users/codykoebnick/Downloads/Data Set"),silent=TRUE)
-try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling"),silent=TRUE)
-try(setwd("/Users/laurencehendry/GitHub/MaritimePiracy"),silent=TRUE)
-try(setwd("C:/Users/Dani/Documents/GitHub/MaritimePiracyWrangling/Data""))
+try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling/Data"),silent=TRUE)
+try(setwd("C:/Users/Dani/Documents/GitHub/MaritimePiracyWrangling/Data"), silent=TRUE)
 getwd()
 
 #import data
 # empty cells are now coded with NA and can manually be excluded from any function with na.omit command
-shipping <- read.csv("Data/MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
+shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
 # have a look at how the variables are created
 str(shipping)
 # create sub sample for wrangling
@@ -75,7 +73,7 @@ allmerge <- merge(shipping, CoastlineTable, all.x=TRUE)
 ######
 #Armed Conflict
 ######
-military <- read.csv("Data/armed-conflict.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, na.strings = c("", "NA")) 
+military <- read.csv("armed-conflict.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, na.strings = c("", "NA")) 
 milcc <- military$Location #155 unique values
 military$iso2c <- countrycode(milcc, "country.name", "iso2c") #only 84 iso countries
 military$year <- military$Year
@@ -108,10 +106,10 @@ allWDI <- WDI(iso, indicator = c("SL.UEM.TOTL.ZS",
                                  "SL.TLF.ACTI.1524.ZS",
                                  "SL.EMP.VULN.MA.ZS",
                                  "SL.EMP.VULN.ZS"), 
-              start=1994, end=2014, cache = TRUE)
+              start=1994, end=2014)
 
 # renaming
-names(allWDI)[1] <- 'iso'
+names(allWDI)[1] <- 'iso2c'
 names(allWDI)[2] <- 'country'
 names(allWDI)[3] <- 'year'
 names(allWDI)[4] <- 'unem.total'
@@ -135,9 +133,12 @@ names(allWDI)[20] <- 'vul.emp'
 ######
 #Merge
 ######
-names(wdiData2)[1] <- 'closest_coastal_state'
-total <- merge(allWDI,military,by=c("iso2c","year"))
+total <- merge(allWDI,military,by=c("iso2c","year"), all.x = TRUE)
 
+######
+#Aggregate to MACRO
+######
+library(reshape2)
 
 #single parsing if desired
 unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
