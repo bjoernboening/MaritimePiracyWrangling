@@ -17,7 +17,6 @@ library(XML) # Tool for generating XML file
 library(WDI) # Scraping Data from the World Bank 
 library(countrycode) # provides world bank country codes 
 library(Amelia)
-library(tidyr) # reshaping
 
 #set working directories if necessary (if data lies in git repo it is not necessary though)
 try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling"),silent=TRUE)
@@ -25,12 +24,13 @@ try(setwd("C:/Users/Dani/Documents/GitHub/MaritimePiracyWrangling/Data"),silent=
 getwd()
 
 #import data
-# empty cells are now coded with NA and can manually be excluded from any function with na.omit command
+#empty cells are now coded with NA and can manually be excluded from any function with na.omit command
 shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
 
-######################################
-# Scraping Data from World Bank -BB
-######################################
+####################################
+#Scraping Data from World Bank -BB-#
+####################################
+
 missmap(shipping)
 #get rid of NA for WDI parsing
 shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
