@@ -117,5 +117,19 @@ total <- merge(allWDI,military,by=c("iso2c","year"))
 #vulnerable.emp.m <- WDI(iso, indicator = "SL.EMP.VULN.MA.ZS", start=1994, end=2014)
 #vulnerable.emp <- WDI(iso, indicator = "SL.EMP.VULN.ZS", start=1994, end=2014)
 
+#######################################################
+#how many attacks (succ & unsucc) per country per year#
+#######################################################
+
+library(zoo)
+shipping$cy <- as.character(paste(shipping$closest_coastal_state, shipping$year, sep = "-")) #paste countrylevel and year behind each other
+summary(shipping$cy)
+
+
+
+###########################
+#aggregate to countrylevel#
+###########################
+
 aggdata <-aggregate(shipping, by=list(shipping$closest_coastal_state,shipping$year), 
                     FUN=mean, na.rm=TRUE)
