@@ -21,7 +21,8 @@ library(Amelia)
 # set working directories if necessary (if data lies in git repo it is not necessary though)
 try(setwd("/Users/codykoebnick/Downloads/Data Set"),silent=TRUE)
 try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling"),silent=TRUE)
-try(setwd("/Users/laurencehendry/GitHub/MaritimePiracy"),silent=TRUE) 
+try(setwd("/Users/laurencehendry/GitHub/MaritimePiracy"),silent=TRUE)
+try(setwd("C:/Users/Dani/Documents/GitHub/MaritimePiracyWrangling/Data""))
 getwd()
 
 #import data
