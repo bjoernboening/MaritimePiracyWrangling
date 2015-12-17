@@ -17,11 +17,11 @@ library(XML) # Tool for generating XML file
 library(WDI) # Scraping Data from the World Bank 
 library(countrycode) # provides world bank country codes 
 library(Amelia)
+library(tidyr) # reshaping
 
-# set working directories if necessary (if data lies in git repo it is not necessary though)
-try(setwd("/Users/codykoebnick/Downloads/Data Set"),silent=TRUE)
+#set working directories if necessary (if data lies in git repo it is not necessary though)
 try(setwd("E:/bjoer/Documents/GitHub/MaritimePiracyWrangling"),silent=TRUE)
-try(setwd("/Users/laurencehendry/GitHub/MaritimePiracy"),silent=TRUE) 
+try(setwd("C:/Users/Dani/Documents/GitHub/MaritimePiracyWrangling/Data"),silent=TRUE)
 getwd()
 
 #import data
@@ -79,23 +79,27 @@ names(allWDI)[18] <- 'labor.part'
 names(allWDI)[19] <- 'vul.emp.m'
 names(allWDI)[20] <- 'vul.emp'
 
-#single parsing if desired
-unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
-unem.y.m <- WDI(iso, indicator = "SL.UEM.1524.MA.ZS", start=1994, end=2014)
-unem.y <- WDI(iso, indicator = "SL.UEM.1524.ZS", start=1994, end=2014)
-debt.service <- WDI(iso, indicator = "DT.TDS.DECT.GD.ZS", start=1994, end=2014)
-debt.ratio <- WDI(iso, indicator = "GC.DOD.TOTL.GD.ZS", start=1994, end=2014)
+###########################
+#single parsing if desired#
+###########################
+#unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
+#unem.y.m <- WDI(iso, indicator = "SL.UEM.1524.MA.ZS", start=1994, end=2014)
+#unem.y <- WDI(iso, indicator = "SL.UEM.1524.ZS", start=1994, end=2014)
+#debt.service <- WDI(iso, indicator = "DT.TDS.DECT.GD.ZS", start=1994, end=2014)
+#debt.ratio <- WDI(iso, indicator = "GC.DOD.TOTL.GD.ZS", start=1994, end=2014)
 #trade.balance <- WDI(iso, indicator = "BNGSRMRCHKD", start=1994, end=2014)
-GDP.ppp <- WDI(iso, indicator = "NY.GDP.PCAP.PP.KD.ZG", start=1994, end=2014)
-GDP <- WDI(iso, indicator = "NY.GDP.PCAP.KD.ZG", start=1994, end=2014)
-easybusiness <- WDI(iso, indicator = "IC.BUS.EASE.XQ", start=1994, end=2014)
-FDI <- WDI(iso, indicator = "BN.KLT.DINV.CD.ZS", start=1994, end=2014)
-pop.growth <- WDI(iso, indicator = "SP.POP.GROW", start=1994, end=2014)
-pop.rural <- WDI(iso, indicator = "SP.RUR.TOTL.ZG", start=1994, end=2014)
-pop.urban <- WDI(iso, indicator = "SP.URB.GROW", start=1994, end=2014)
-pov.125 <- WDI(iso, indicator = "SI.POV.DDAY", start=1994, end=2014)
+#GDP.ppp <- WDI(iso, indicator = "NY.GDP.PCAP.PP.KD.ZG", start=1994, end=2014)
+#GDP <- WDI(iso, indicator = "NY.GDP.PCAP.KD.ZG", start=1994, end=2014)
+#easybusiness <- WDI(iso, indicator = "IC.BUS.EASE.XQ", start=1994, end=2014)
+#FDI <- WDI(iso, indicator = "BN.KLT.DINV.CD.ZS", start=1994, end=2014)
+#pop.growth <- WDI(iso, indicator = "SP.POP.GROW", start=1994, end=2014)
+#pop.rural <- WDI(iso, indicator = "SP.RUR.TOTL.ZG", start=1994, end=2014)
+#pop.urban <- WDI(iso, indicator = "SP.URB.GROW", start=1994, end=2014)
+#pov.125 <- WDI(iso, indicator = "SI.POV.DDAY", start=1994, end=2014)
 #pov.250 <- WDI(iso, indicator = "SI.POV.25DAY", start=1994, end=2014)
-inflation <- WDI(iso, indicator = "FP.CPI.TOTL.ZG", start=1994, end=2014)
-labor.part <- WDI(iso, indicator = "SL.TLF.ACTI.1524.ZS", start=1994, end=2014)
-vulnerable.emp.m <- WDI(iso, indicator = "SL.EMP.VULN.MA.ZS", start=1994, end=2014)
-vulnerable.emp <- WDI(iso, indicator = "SL.EMP.VULN.ZS", start=1994, end=2014)
+#inflation <- WDI(iso, indicator = "FP.CPI.TOTL.ZG", start=1994, end=2014)
+#labor.part <- WDI(iso, indicator = "SL.TLF.ACTI.1524.ZS", start=1994, end=2014)
+#vulnerable.emp.m <- WDI(iso, indicator = "SL.EMP.VULN.MA.ZS", start=1994, end=2014)
+#vulnerable.emp <- WDI(iso, indicator = "SL.EMP.VULN.ZS", start=1994, end=2014)
+
+
