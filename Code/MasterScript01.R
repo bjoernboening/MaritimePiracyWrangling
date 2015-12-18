@@ -57,7 +57,7 @@ allWDI <- WDI(iso, indicator = c("SL.UEM.TOTL.ZS",
                                  "SL.TLF.ACTI.1524.ZS",
                                  "SL.EMP.VULN.MA.ZS",
                                  "SL.EMP.VULN.ZS"), 
-              start=1994, end=2014)
+              start=1993, end=2014)
 # renaming
 names(allWDI)[2] <- 'country'
 names(allWDI)[3] <- 'year'
@@ -97,39 +97,68 @@ total <- merge(allWDI,military,by=c("iso2c","year"))
 ###########################
 #single parsing if desired#
 ###########################
-#unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
-#unem.y.m <- WDI(iso, indicator = "SL.UEM.1524.MA.ZS", start=1994, end=2014)
-#unem.y <- WDI(iso, indicator = "SL.UEM.1524.ZS", start=1994, end=2014)
-#debt.service <- WDI(iso, indicator = "DT.TDS.DECT.GD.ZS", start=1994, end=2014)
-#debt.ratio <- WDI(iso, indicator = "GC.DOD.TOTL.GD.ZS", start=1994, end=2014)
-#trade.balance <- WDI(iso, indicator = "BNGSRMRCHKD", start=1994, end=2014)
-#GDP.ppp <- WDI(iso, indicator = "NY.GDP.PCAP.PP.KD.ZG", start=1994, end=2014)
-#GDP <- WDI(iso, indicator = "NY.GDP.PCAP.KD.ZG", start=1994, end=2014)
-#easybusiness <- WDI(iso, indicator = "IC.BUS.EASE.XQ", start=1994, end=2014)
-#FDI <- WDI(iso, indicator = "BN.KLT.DINV.CD.ZS", start=1994, end=2014)
-#pop.growth <- WDI(iso, indicator = "SP.POP.GROW", start=1994, end=2014)
-#pop.rural <- WDI(iso, indicator = "SP.RUR.TOTL.ZG", start=1994, end=2014)
-#pop.urban <- WDI(iso, indicator = "SP.URB.GROW", start=1994, end=2014)
-#pov.125 <- WDI(iso, indicator = "SI.POV.DDAY", start=1994, end=2014)
-#pov.250 <- WDI(iso, indicator = "SI.POV.25DAY", start=1994, end=2014)
-#inflation <- WDI(iso, indicator = "FP.CPI.TOTL.ZG", start=1994, end=2014)
-#labor.part <- WDI(iso, indicator = "SL.TLF.ACTI.1524.ZS", start=1994, end=2014)
-#vulnerable.emp.m <- WDI(iso, indicator = "SL.EMP.VULN.MA.ZS", start=1994, end=2014)
-#vulnerable.emp <- WDI(iso, indicator = "SL.EMP.VULN.ZS", start=1994, end=2014)
-
-#######################################################
-#how many attacks (succ & unsucc) per country per year#
-#######################################################
-
-#library(zoo)
-#shipping$cy <- as.character(paste(shipping$closest_coastal_state, shipping$year, sep = "-")) #paste countrylevel and year behind each other
-#summary(shipping$cy)
+#unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1993, end=2014)
+#unem.y.m <- WDI(iso, indicator = "SL.UEM.1524.MA.ZS", start=1993, end=2014)
+#unem.y <- WDI(iso, indicator = "SL.UEM.1524.ZS", start=1993, end=2014)
+#debt.service <- WDI(iso, indicator = "DT.TDS.DECT.GD.ZS", start=1993, end=2014)
+#debt.ratio <- WDI(iso, indicator = "GC.DOD.TOTL.GD.ZS", start=1993, end=2014)
+#trade.balance <- WDI(iso, indicator = "BNGSRMRCHKD", start=1993, end=2014)
+#GDP.ppp <- WDI(iso, indicator = "NY.GDP.PCAP.PP.KD.ZG", start=1993, end=2014)
+#GDP <- WDI(iso, indicator = "NY.GDP.PCAP.KD.ZG", start=1993, end=2014)
+#easybusiness <- WDI(iso, indicator = "IC.BUS.EASE.XQ", start=1993, end=2014)
+#FDI <- WDI(iso, indicator = "BN.KLT.DINV.CD.ZS", start=1993, end=2014)
+#pop.growth <- WDI(iso, indicator = "SP.POP.GROW", start=1993, end=2014)
+#pop.rural <- WDI(iso, indicator = "SP.RUR.TOTL.ZG", start=1993, end=2014)
+#pop.urban <- WDI(iso, indicator = "SP.URB.GROW", start=1993, end=2014)
+#pov.125 <- WDI(iso, indicator = "SI.POV.DDAY", start=1993, end=2014)
+#pov.250 <- WDI(iso, indicator = "SI.POV.25DAY", start=1993, end=2014)
+#inflation <- WDI(iso, indicator = "FP.CPI.TOTL.ZG", start=1993, end=2014)
+#labor.part <- WDI(iso, indicator = "SL.TLF.ACTI.1524.ZS", start=1993, end=2014)
+#vulnerable.emp.m <- WDI(iso, indicator = "SL.EMP.VULN.MA.ZS", start=1993, end=2014)
+#vulnerable.emp <- WDI(iso, indicator = "SL.EMP.VULN.ZS", start=1993, end=2014)
 
 ###########################
 #aggregate to countrylevel#
 ###########################
 
-#aggdata <-aggregate(shipping, by=list(shipping$closest_coastal_state,shipping$year), 
-                    FUN=mean, na.rm=TRUE)
+#aggdata <-aggregate(shipping, by=list(shipping$closest_coastal_state,shipping$year), FUN=mean, na.rm=TRUE)
+
+names(shipping)[6] <- 'time'
+shipping$time <- factor(shipping$time,
+                   levels = c(1,2,3,4),
+                   labels = c("beforenoon", "afternoon", "night", "morning"))
+shipping$time <- factor(shipping$time)
+
+names(shipping)[24] <- 'attack'
+shipping$attack[shipping$attack==-99] <- NA
+shipping$attack <- factor(shipping$attack,
+                       levels = c(0,1),
+                       labels = c("unsucc", "succ"))
+shipping$attack <- factor(shipping$attack)
+
+names(shipping)[18] <- 'vessel'
+#if(shipping$vessel == -99 || shipping$vessel == 22 || shipping$vessel == 696) {
+#  shipping$vessel <- NA
+#  }
+
+#if (shipping$vessel == 2 || shipping$vessel == 4 || shipping$vessel == 6) {
+#  shipping$vessel <- 111
+#  }
+
+#if (shipping$vessel == 3 || shipping$vessel == 7 || shipping$vessel == 8) {
+#  shipping$vessel <- 222
+#  }
+
+#if (shipping$vessel == 1 || shipping$vessel == 5 || shipping$vessel == 9 || shipping$vessel == 10) {
+#  shipping$vessel <- 333
+#  }
+
+shipping$vessel[shipping$vessel == 111] <- 1
+shipping$vessel[shipping$vessel == 222] <- 2
+shipping$vessel[shipping$vessel == 333] <- 3
+shipping$vessel <- factor(shipping$vessel,
+                  levels = c(1,2,3),
+                  labels = c("merchant", "oil", "other"))
+
 library(reshape2)
-aggregat <- dcast(shipping, closest_coastal_state + year ~ Incident_type_recode, sum) # p317 R for Dummies
+aggregat <- dcast(shipping, closest_coastal_state + year ~ attack_type_recode, sum) # p317 R for Dummies
