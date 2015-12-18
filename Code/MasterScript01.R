@@ -121,15 +121,15 @@ total <- merge(allWDI,military,by=c("iso2c","year"))
 #how many attacks (succ & unsucc) per country per year#
 #######################################################
 
-library(zoo)
-shipping$cy <- as.character(paste(shipping$closest_coastal_state, shipping$year, sep = "-")) #paste countrylevel and year behind each other
-summary(shipping$cy)
-
-
+#library(zoo)
+#shipping$cy <- as.character(paste(shipping$closest_coastal_state, shipping$year, sep = "-")) #paste countrylevel and year behind each other
+#summary(shipping$cy)
 
 ###########################
 #aggregate to countrylevel#
 ###########################
 
-aggdata <-aggregate(shipping, by=list(shipping$closest_coastal_state,shipping$year), 
+#aggdata <-aggregate(shipping, by=list(shipping$closest_coastal_state,shipping$year), 
                     FUN=mean, na.rm=TRUE)
+library(reshape2)
+aggregat <- dcast(shipping, closest_coastal_state + year ~ Incident_type_recode, sum) # p317 R for Dummies
