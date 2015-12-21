@@ -2,6 +2,10 @@
 #### Maritime Piracy Data Analysis ######################
 #########################################################
 
+######
+#IMPORT
+######
+
 # Import the dataset about piracy attacks into your wd 
 # Call libraries we need for the project, make sure you have them installed
 library(base)
@@ -25,50 +29,106 @@ getwd()
 
 #import data
 # empty cells are now coded with NA and can manually be excluded from any function with na.omit command
-shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
+piracy <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = FALSE, na.strings = c("", "NA"))
 # have a look at how the variables are created
-str(shipping)
-# create sub sample for wrangling
-sample <- shipping[shipping$closest_coastal_state %in% c("Indonesia", "Malaysia", "Singapore") & year[2004:2014] ]
-sub <- subset(sample, year > 2002, select = c(1:25))
+#str(shipping)
+
+# create sub sample for tests
+#sample <- shipping[shipping$closest_coastal_state %in% c("Indonesia", "Malaysia", "Singapore") & year[2004:2014] ]
+#sub <- subset(sample, year > 2002, select = c(1:25))
 # to get rid of NAs
-sample$incident_type[is.na(sample$incident_type)] <- NULL
-sample[!is.na(sample$closest_coastal_state), ]
+#sample$incident_type[is.na(sample$incident_type)] <- NULL
+#sample[!is.na(sample$closest_coastal_state), ]
 
-######################################
-# Add a variable on country coastline length web-scraped from wikipedia -LH
-#####################################
+#subsetting (keep) variables
+sub <- piracy[c(4, 6, 12, 18, 24, 23, 25)]
 
-# Scraping from Wikipedia
-URL <- 'https://en.wikipedia.org/wiki/List_of_countries_by_length_of_coastline'
+######
+#DATA WRANGLING
+######
 
-tables <- URL %>% GET() %>%
-  content(as = 'parsed') %>% 
-  readHTMLTable()
+#renaming and recoding
+names(sub)[1] <- 'year'
 
-names(tables)
+names(sub)[2] <- 'time'
+sub$time <- factor(sub$time,
+                   levels = c(1,2,3,4),
+                   labels = c("early", "day", "evening", "night"))
+sub$time <- factor(sub$time)
 
-CoastlineTable <- tables[[1]]
+names(sub)[3] <- 'state'
 
-head(CoastlineTable)[, 1:3]
+names(sub)[4] <- 'type'
+sub$type[sub$type==1] <- 111
+sub$type[sub$type==5] <- 111
+sub$type[sub$type==9] <- 111
+sub$type[sub$type==2] <- 222
+sub$type[sub$type==3] <- 222
+sub$type[sub$type==4] <- 222
+sub$type[sub$type==6] <- 222
+sub$type[sub$type==7] <- 222
+sub$type[sub$type==8] <- 222
+sub$type[sub$type==111] <- 1
+sub$type[sub$type==222] <- 2
+sub$type[sub$type==-99] <- NA
+sub$type[sub$type==10] <- NA
+sub$type[sub$type==22] <- NA
+sub$type[sub$type==696] <- NA
+sub$type <- factor(sub$type,
+                   levels = c(1,2),
+                   labels = c("small", "big"))
+sub$type <- factor(sub$type)
 
-#cleaning the scrape for merge
-CoastlineTable$V2 = NULL
-CoastlineTable$V3 = NULL
-CoastlineTable$V4 = NULL
-CoastlineTable$V5 = NULL
-CoastlineTable$V6 = NULL
-CoastlineTable$V8 = NULL
+names(sub)[5] <- 'incident'
+sub$incident[sub$incident==-99] <- NA
+sub$incident <- factor(sub$incident,
+                       levels = c(0,1),
+                       labels = c("attempted", "acutal"))
+sub$incident <- factor(sub$incident)
 
-#renaming, part of scrape
-colnames(CoastlineTable)
-names(CoastlineTable)
-names(CoastlineTable)[1] <- 'closest_coastal_state'
-names(CoastlineTable)[2] <- 'Coast/Area ratio (m/km2)'
+names(sub)[6] <- 'stat'
+sub$stat[sub$stat==-99] <- NA
+sub$status <- recode(sub$stat, "c(1)='2'; c(2,3,4)='1'") # what a bastard this line was arrgg
+sub$status <- factor(sub$status,
+                     levels = c(1,2),
+                     labels = c("stationary", "moving"))
+sub$status <- factor(sub$status)
+sub$stat = NULL
 
-#merging
-#p297 from R for Dummies
-allmerge <- merge(shipping, CoastlineTable, all.x=TRUE)
+names(sub)[6] <- 'violence'
+sub$violence[sub$violence==-99] <- NA
+sub$violence[sub$violence==10] <- NA
+sub$violence[sub$violence==5] <- NA
+sub$violence[sub$violence==6] <- 4
+sub$violence <- factor(sub$violence,
+                     levels = c(1,2,3,4),
+                     labels = c("hijacked", "boarding", "fired upon", "detained"))
+sub$violence <- factor(sub$violence)
+
+# Delete missing values through listwise deletion
+# you can omit NAs in the analysis
+#sub <- na.omit(sub)
+
+######
+#Aggregate to MACRO
+######
+
+#library(reshape2)
+#agg1 <- dcast(sub, state + year ~ incident, length) # p317
+#agg2 <- dcast(sub, state + year ~ time, length) # p317
+#agg3 <- dcast(sub, state + year ~ status, length) # p317
+#agg4 <- dcast(sub, state + year ~ violence, length) # p317
+#agg5 <- dcast(sub, state + year ~ type, length) # p317
+#aggregated1 <- merge(agg1,agg2, by=c("state","year"))
+#aggregated2 <- merge(agg3,agg4, by=c("state","year"))
+#aggregated3 <- merge(aggregated2, agg5, by=c("state", "year"))
+#finalagg <- merge(aggregated3, aggregated1, by=c("state", "year"))
+#write.csv(finalagg, "TimeSeries.csv")
+
+# create iso2c for merging with remaining datasets
+subcc <- finalagg$state #155 unique values
+finalagg$iso2c <- countrycode(subcc, "country.name", "iso2c") #only 84 iso countries
+
 
 ######
 #Armed Conflict
@@ -78,12 +138,13 @@ milcc <- military$Location #155 unique values
 military$iso2c <- countrycode(milcc, "country.name", "iso2c") #only 84 iso countries
 military$year <- military$Year
 military$Year <- NULL
-######################################
-# Scraping Data from World Bank -BB
-######################################
+
+######
+#Scraping Data from World Bank -BB
+######
 missmap(shipping)
 #get rid of NA for WDI parsing
-shipping <- read.csv("Data/MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
+shipping <- read.csv("MaritimePiracyTennessee.csv", header = TRUE, sep = ";", stringsAsFactors = TRUE, na.strings = c("", "NA"))
 #shipping$closest_coastal_state <- na.omit(shipping)$closest_coastal_state
 #country names
 cc <- unique(na.omit(shipping)$closest_coastal_state) #108 unique values
@@ -106,7 +167,7 @@ allWDI <- WDI(iso, indicator = c("SL.UEM.TOTL.ZS",
                                  "SL.TLF.ACTI.1524.ZS",
                                  "SL.EMP.VULN.MA.ZS",
                                  "SL.EMP.VULN.ZS"), 
-              start=1994, end=2014)
+              start=1993, end=2014)
 
 # renaming
 names(allWDI)[1] <- 'iso2c'
@@ -133,14 +194,11 @@ names(allWDI)[20] <- 'vul.emp'
 ######
 #Merge
 ######
-total <- merge(allWDI,military,by=c("iso2c","year"), all.x = TRUE)
+total <- merge(allWDI,military,by=c("iso2c","year"), all.x = TRUE) #merges conflicts and WDI
+total2 <- merge(total,finalagg,by=c("iso2c","year"), all.y =TRUE) #adds WDI and conflict data only in years with incidents
+#needs revision if we plan to add null incident years for each country as well
+#write.csv(total2, "AllTimeSeries.csv")
 
-######
-#Aggregate to MACRO
-######
-library(reshape2)
-aggregat <- dcast(shipping, closest_coastal_state + year ~ Incident_type_recode, sum) # p317
-  
 #single parsing if desired
 unem <- WDI(iso, indicator = "SL.UEM.TOTL.ZS", start=1994, end=2014)
 unem.y.m <- WDI(iso, indicator = "SL.UEM.1524.MA.ZS", start=1994, end=2014)
