@@ -137,21 +137,21 @@ shipping$attack <- factor(shipping$attack,
 shipping$attack <- factor(shipping$attack)
 
 names(shipping)[18] <- 'vessel'
-#if(shipping$vessel == -99 || shipping$vessel == 22 || shipping$vessel == 696) {
-#  shipping$vessel <- NA
-#  }
-
-#if (shipping$vessel == 2 || shipping$vessel == 4 || shipping$vessel == 6) {
-#  shipping$vessel <- 111
-#  }
-
-#if (shipping$vessel == 3 || shipping$vessel == 7 || shipping$vessel == 8) {
-#  shipping$vessel <- 222
-#  }
-
-#if (shipping$vessel == 1 || shipping$vessel == 5 || shipping$vessel == 9 || shipping$vessel == 10) {
-#  shipping$vessel <- 333
-#  }
+sub$type[sub$type==2] <- 111
+sub$type[sub$type==4] <- 111
+sub$type[sub$type==6] <- 111
+sub$type[sub$type==3] <- 222
+sub$type[sub$type==7] <- 222
+sub$type[sub$type==8] <- 222
+sub$type[sub$type==1] <- 333
+sub$type[sub$type==5] <- 333
+sub$type[sub$type==9] <- 333
+sub$type[sub$type==10] <- 333
+sub$type[sub$type==111] <- 1
+sub$type[sub$type==222] <- 2
+sub$type[sub$type==-99] <- NA
+sub$type[sub$type==22] <- NA
+sub$type[sub$type==696] <- NA
 
 shipping$vessel[shipping$vessel == 111] <- 1
 shipping$vessel[shipping$vessel == 222] <- 2
